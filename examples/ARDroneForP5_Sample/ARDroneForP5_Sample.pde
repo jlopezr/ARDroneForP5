@@ -1,18 +1,29 @@
 import com.shigeodayo.ardrone.processing.*;
+import com.shigeodayo.ardrone.manager.*;
+import com.shigeodayo.ardrone.navdata.*;
+import com.shigeodayo.ardrone.utils.*;
+import com.shigeodayo.ardrone.processing.*;
+import com.shigeodayo.ardrone.command.*;
+import com.shigeodayo.ardrone.*;
 
 ARDroneForP5 ardrone;
 
 void setup() {
-  size(320, 240);
-
+  
+  //Tamany del display de la camara al PC
+  //Size.620,360
+  size(1000,360);
+  //IP de la Wi-Fi del drone
   ardrone=new ARDroneForP5("192.168.1.1");
-  // connect to the AR.Drone
+  // conectem amb drone
   ardrone.connect();
-  // for getting sensor information
+  // agafem informació dels sensors
   ardrone.connectNav();
-  // for getting video informationp
+  // agafem informació de la camara
   ardrone.connectVideo();
-  // start to control AR.Drone and get sensor and video data of it
+  // comencem el control del drone i 
+  //agafem info dels sensors i video
+
   ardrone.start();
 }
 
@@ -37,13 +48,58 @@ void draw() {
   float altitude = ardrone.getAltitude();
   float[] velocity = ardrone.getVelocity();
   int battery = ardrone.getBatteryPercentage();
+  
+  double lat = ardrone.getLatitude();
+  double lon = ardrone.getLongitude();
+  double elev = ardrone.getElevation();
 
   String attitude = "pitch:" + pitch + "\nroll:" + roll + "\nyaw:" + yaw + "\naltitude:" + altitude;
+  PFont f;
+  f=createFont("Arial",16,true);
+  textFont(f);
+  String GPS = "Latitude:" + lat + "\nLongitude:" + lon + "\nElevation" + elev;
+  text(GPS, 120, 85);
   text(attitude, 20, 85);
   String vel = "vx:" + velocity[0] + "\nvy:" + velocity[1];
-  text(vel, 20, 140);
+  text(vel, 20, 250);
   String bat = "battery:" + battery + " %";
-  text(bat, 20, 170);
+  text(bat, 20, 200);
+
+  //AI--> Image: (620,360) centre (260,180)
+  //pitch: (negatiu morro avall) 220pi == 90 º  100pi == -90º
+  //roll: postiu (a la dreta down)
+
+//AI
+arc(810.0,180.0,180.0,180.0,0.0,TWO_PI);
+arc(810.0,180.0,10.0,10.0,0.0,TWO_PI);
+line(790,90,790,270);
+line(830,90,830,270);
+
+float i=90;
+while(i<=270)
+{
+  line(790,i,830,i);
+  i=i+10;
+}
+
+  double xi=750;
+  double yi=180;
+  double xf=870;
+  double yf=180;
+
+  double xChange = 60*Math.cos(Math.toRadians(roll));
+
+  double yChange = 60*Math.sin(Math.toRadians(roll));
+  
+  float Xi = (float) xChange;
+  float Yi = (float) yChange;
+  
+
+  line(810-Math.abs(Xi),180+Yi,810+Math.abs(Xi),180-Yi);
+  
+  //y coord: 100-->-90 260-->90 180--0
+  float newY=(100/90)*pitch;
+  line(750,180+newY,870,180+newY);
 }
 
 //PCのキーに応じてAR.Droneを操作できる．
@@ -63,6 +119,7 @@ void keyPressed() {
       ardrone.goRight(); // go right
     } 
     else if (keyCode == SHIFT) {
+      println("takeoff");
       ardrone.takeOff(); // take off, AR.Drone cannot move while landing
     } 
     else if (keyCode == CONTROL) {

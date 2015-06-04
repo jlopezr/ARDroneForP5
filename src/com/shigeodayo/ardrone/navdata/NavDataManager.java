@@ -35,6 +35,7 @@ public abstract class NavDataManager extends AbstractManager {
 	private StateListener stateListener = null;
 	private VelocityListener velocityListener = null;
 	private BatteryListener batteryListener = null;
+	private GpsListener gpsListener = null;
 
 	public NavDataManager(InetAddress inetaddr, CommandManager manager) {
 		this.inetaddr = inetaddr;
@@ -56,6 +57,10 @@ public abstract class NavDataManager extends AbstractManager {
 	public void setVelocityListener(VelocityListener velocityListener) {
 		this.velocityListener = velocityListener;
 	}
+	
+	public void setGPSListener(GpsListener gpsListener){
+		this.gpsListener = gpsListener;
+	}
 
 	@Override
 	public void run() {
@@ -67,6 +72,7 @@ public abstract class NavDataManager extends AbstractManager {
 		parser.setBatteryListener(batteryListener);
 		parser.setStateListener(stateListener);
 		parser.setVelocityListener(velocityListener);
+		parser.setGPSListener(gpsListener);
 
 		while (true) {
 			try {

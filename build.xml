@@ -18,7 +18,7 @@
 	</target>
 
 	<target name="compile">
-		<javac srcdir="${src}" destdir="${output}"/>
+		<javac target="1.6" source="1.6" srcdir="${src}" destdir="${output}"/>
 	</target>
 
 	<target name="compress">

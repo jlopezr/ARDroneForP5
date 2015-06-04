@@ -14,6 +14,7 @@ public class NavDataParser {
 	private StateListener stateListener;
 	private VelocityListener velocityListener;
 	private BatteryListener batteryListener;
+	private GpsListener gpsListener;
 
 	long lastSequenceNumber = 1;
 
@@ -33,12 +34,16 @@ public class NavDataParser {
 	public void setVelocityListener(VelocityListener velocityListener) {
 		this.velocityListener = velocityListener;
 	}
+	
+	public void setGPSListener(GpsListener gpsListener){
+		this.gpsListener = gpsListener;
+	}
 
 	public void parseNavData(ByteBuffer buffer) throws NavDataException {
 		buffer.order(ByteOrder.LITTLE_ENDIAN);
 		int magic = buffer.getInt();
 		// System.out.printf("%02x\n", magic);
-		requireEquals("Magic must be correct", 0x55667788, magic);
+		//requireEquals("Magic must be correct", 0x55667788, magic);
 
 		int state = buffer.getInt();
 		long sequence = buffer.getInt() & 0xFFFFFFFFL;
@@ -71,7 +76,12 @@ public class NavDataParser {
 		case 0:
 			processNavDataDemo(optionData);
 			break;
+			
+		case 27:
+			processGPSData(optionData);
+			break;
 		}
+		
 	}
 
 	private void processNavDataDemo(ByteBuffer optionData) {
@@ -102,6 +112,18 @@ public class NavDataParser {
 			velocityListener.velocityChanged(vx, vy, vz);
 		}
 	}
+	private void processGPSData(ByteBuffer optionData){
+		
+		double latitude = optionData.getDouble();
+		double longitude = optionData.getDouble();
+		double elevation = optionData.getDouble();
+		
+		if(gpsListener != null){
+			gpsListener.GPSUpdated(latitude, longitude, elevation);
+		}
+		
+	}
+	
 
 	private void requireEquals(String message, int expected, int actual)
 			throws NavDataException {

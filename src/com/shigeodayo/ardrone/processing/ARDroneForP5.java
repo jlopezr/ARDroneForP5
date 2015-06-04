@@ -24,6 +24,7 @@ import java.awt.image.BufferedImage;
 //import java.awt.image.Raster;
 //import java.awt.image.WritableRaster;
 
+
 import processing.core.PConstants;
 import processing.core.PImage;
 
@@ -31,6 +32,7 @@ import com.shigeodayo.ardrone.ARDrone;
 import com.shigeodayo.ardrone.navdata.AttitudeListener;
 import com.shigeodayo.ardrone.navdata.BatteryListener;
 import com.shigeodayo.ardrone.navdata.DroneState;
+import com.shigeodayo.ardrone.navdata.GpsListener;
 import com.shigeodayo.ardrone.navdata.StateListener;
 import com.shigeodayo.ardrone.navdata.VelocityListener;
 import com.shigeodayo.ardrone.utils.ARDroneVersion;
@@ -43,7 +45,7 @@ import com.shigeodayo.ardrone.video.ImageListener;
  * 
  */
 public class ARDroneForP5 extends ARDrone implements ImageListener,
-		AttitudeListener, BatteryListener, StateListener, VelocityListener {
+		AttitudeListener, BatteryListener, StateListener, VelocityListener, GpsListener {
 
 	private BufferedImage videoImage = null;
 
@@ -51,6 +53,10 @@ public class ARDroneForP5 extends ARDrone implements ImageListener,
 	private float roll = 0.0f;
 	private float yaw = 0.0f;
 	private float altitude = 0.0f;
+	
+	private double latitude = 0.0;
+	private double longitude = 0.0;
+	private double elevation = 0.0;
 
 	private int battery = 0;
 
@@ -109,9 +115,12 @@ public class ARDroneForP5 extends ARDrone implements ImageListener,
 		addBatteryUpdateListener(this);
 		addStateUpdateListener(this);
 		addVelocityUpdateListener(this);
+		addGpsUpdateListener(this);
 		return super.connectNav();
 	}
 
+
+	
 	@Override
 	public void imageUpdated(BufferedImage image) {
 		this.videoImage = image;
@@ -142,6 +151,12 @@ public class ARDroneForP5 extends ARDrone implements ImageListener,
 		this.roll = roll;
 		this.altitude = altitude;
 	}
+	@Override
+	public void GPSUpdated(double lat, double lon, double alt){
+		this.latitude = lat;
+		this.longitude =lon;
+		this.elevation = alt;
+	}
 
 	public void printARDroneInfo() {
 		System.out
@@ -149,6 +164,7 @@ public class ARDroneForP5 extends ARDrone implements ImageListener,
 		System.out.println("Attitude: pitch=" + pitch + " roll=" + roll
 				+ " yaw=" + yaw + " altitude=" + altitude);
 		System.out.println("Battery: " + battery + "%");
+		System.out.println("Latitide:" + latitude + "Longitude:" + longitude);
 		System.out.println("Velocity: vx=" + vx + " vy=" + vy);
 		System.out
 				.println("--------------------------------------------------------------------");
@@ -193,11 +209,34 @@ public class ARDroneForP5 extends ARDrone implements ImageListener,
 	public float[] getVelocity() {
 		return velocity;
 	}
+	
+	public double[] rollMovement(double Xi, double Yi, float rolAngle){
+		
+		double ang = rolAngle;
+		ang = ang*Math.PI/180;
+		
+		double Xf = Xi*Math.cos(ang)-Yi*Math.sin(ang);
+		double Yf = Xi*Math.sin(ang)+Yi*Math.cos(ang);
+		
+		double[] rotated = {Xf,Yf};
+
+		return rotated;
+		
+	}
 
 	public int getBatteryPercentage() {
 		return battery;
 	}
-
+	public double getLatitude(){
+		return latitude;
+	}
+	public double getLongitude(){
+		return longitude;
+	}
+	public double getElevation(){
+		return elevation;
+	}
+//SJS
 	private PImage convertToPImage(BufferedImage bufImg) {
 		if (bufImg == null)
 			return null;

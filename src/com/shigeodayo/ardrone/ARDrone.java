@@ -29,6 +29,7 @@ import com.shigeodayo.ardrone.command.CommandManager2;
 import com.shigeodayo.ardrone.navdata.AttitudeListener;
 import com.shigeodayo.ardrone.navdata.BatteryListener;
 import com.shigeodayo.ardrone.navdata.DroneState;
+import com.shigeodayo.ardrone.navdata.GpsListener;
 import com.shigeodayo.ardrone.navdata.NavDataManager;
 import com.shigeodayo.ardrone.navdata.NavDataManager1;
 import com.shigeodayo.ardrone.navdata.NavDataManager2;
@@ -58,7 +59,8 @@ public class ARDrone implements ARDroneInterface {
 	private BatteryListener batteryListener = null;
 	private StateListener stateListener = null;
 	private VelocityListener velocityListener = null;
-
+	private GpsListener gpsListener = null;
+	
 	private ARDroneVersion ardroneVersion = null;
 
 	/** constructor */
@@ -165,6 +167,7 @@ public class ARDrone implements ARDroneInterface {
 			inetaddr = getInetAddress(ipaddr);
 		}
 		
+		
 		//System.out.println("(connect nav) AR.Drone version:" + ardroneVersion);
 
 		if (ardroneVersion == ARDroneVersion.ARDRONE1) {
@@ -186,6 +189,7 @@ public class ARDrone implements ARDroneInterface {
 				}
 			}
 		});
+		
 		navdataManager.setBatteryListener(new BatteryListener() {
 			@Override
 			public void batteryLevelChanged(int percentage) {
@@ -210,7 +214,19 @@ public class ARDrone implements ARDroneInterface {
 				}
 			}
 		});
-
+		navdataManager.setGPSListener(new GpsListener(){
+			@Override
+			public void GPSUpdated(double lat, double lon, double alt){
+				if(gpsListener != null){
+					gpsListener.GPSUpdated(lat, lon, alt);
+				}
+			};
+		});
+		
+		manager.enableNavData();
+		manager.enableGPS();
+		
+		
 		return navdataManager.connect(ARDroneConstants.NAV_PORT);
 	}
 
@@ -441,6 +457,10 @@ public class ARDrone implements ARDroneInterface {
 	public void addVelocityUpdateListener(VelocityListener velocityListener) {
 		this.velocityListener = velocityListener;
 	}
+	
+	public void addGpsUpdateListener(GpsListener gpsListener){
+		this.gpsListener = gpsListener;
+	}
 
 	// remove listeners
 	public void removeImageUpdateListener() {
@@ -461,6 +481,10 @@ public class ARDrone implements ARDroneInterface {
 
 	public void removeVelocityUpdateListener() {
 		velocityListener = null;
+	}
+	
+	public void removeGpsUpdateListener(){
+		gpsListener = null;
 	}
 
 	/**

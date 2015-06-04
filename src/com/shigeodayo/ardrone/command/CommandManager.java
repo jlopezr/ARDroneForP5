@@ -54,6 +54,17 @@ public abstract class CommandManager extends AbstractManager {
 		fb = bb.asFloatBuffer();
 		ib = bb.asIntBuffer();
 	}
+	
+	public void enableNavData(){
+		command = "AT*CONFIG=" + SEQ + ",\"general:navdata_demo\",\"true\"";
+		continuance = false;
+	}
+	
+	public void enableGPS(){
+		command = "AT*CONFIG=" + SEQ + ",\"general:navdata_options\",\"205586433\"";
+		continuance = false;
+	}
+	
 
 	public void setHorizontalCamera() {
 		command = "AT*CONFIG=" + SEQ + ",\"video:video_channel\",\"0\"";
