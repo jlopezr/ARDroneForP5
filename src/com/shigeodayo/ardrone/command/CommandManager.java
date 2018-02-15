@@ -60,7 +60,8 @@ public abstract class CommandManager extends AbstractManager {
 		continuance = false;
 	}
 	
-	public void enableGPS(){
+	public void enableGPS() {
+		System.out.println("Enabling GPS");
 		command = "AT*CONFIG=" + SEQ + ",\"general:navdata_options\",\"205586433\"";
 		continuance = false;
 	}
@@ -261,7 +262,7 @@ public abstract class CommandManager extends AbstractManager {
 	}
 
 	/*
-	 * Thank you Tarqu’nio !!
+	 * Thank you Tarquï¿½nio !!
 	 */
 	public void move3D(int speedX, int speedY, int speedZ, int speedSpin) {
 		if (speedX > 100)

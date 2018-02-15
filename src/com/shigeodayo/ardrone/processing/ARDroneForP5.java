@@ -105,13 +105,13 @@ public class ARDroneForP5 extends ARDrone implements ImageListener,
 	@Override
 	public boolean connectVideo() {
 		addImageUpdateListener(this);
-		// pimg = new PImage(320, 240);
 		return super.connectVideo();
 	}
 
 	@Override
 	public boolean connectNav() {
-		addAttitudeUpdateListener(this);
+		System.out.println("Version GPS + Repeater");
+        addAttitudeUpdateListener(this);
 		addBatteryUpdateListener(this);
 		addStateUpdateListener(this);
 		addVelocityUpdateListener(this);
@@ -119,6 +119,13 @@ public class ARDroneForP5 extends ARDrone implements ImageListener,
 		return super.connectNav();
 	}
 
+    public void connectRepeater() {
+        Client client = new Client(this, getIPAddress(), 23);
+        client.write("killall node\n");
+        client.write("cd /data/video\n");
+        client.write("./node repeater.js &\n"); 
+        client.stop();
+    }
 
 	
 	@Override

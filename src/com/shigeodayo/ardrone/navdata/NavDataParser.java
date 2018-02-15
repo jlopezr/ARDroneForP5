@@ -114,10 +114,16 @@ public class NavDataParser {
 	}
 	private void processGPSData(ByteBuffer optionData){
 		
+		System.out.println("process GPS Data");
+		System.out.println(optionData);
+				
 		double latitude = optionData.getDouble();
 		double longitude = optionData.getDouble();
 		double elevation = optionData.getDouble();
 		
+		System.out.println("LAT "+latitude);
+		System.out.println("LON "+latitude);
+			
 		if(gpsListener != null){
 			gpsListener.GPSUpdated(latitude, longitude, elevation);
 		}

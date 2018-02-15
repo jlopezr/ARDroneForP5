@@ -95,19 +95,17 @@ public class ARDrone implements ARDroneInterface {
 	public ARDrone(String ipaddr, ARDroneVersion ardroneVersion) {
 		this.ipaddr = ipaddr;
 		this.ardroneVersion = ardroneVersion;
-		/*System.out.println("hoge");
-		if (ardroneVersion == null)
-			ardroneVersion = new ARDroneInfo().getDroneVersion();
-		System.out.println("AR.Drone version:" + ardroneVersion);*/
 	}
-
-
 	
 	/** connect to AR.Drone */
 	@Override
 	public boolean connect() {
 		return connect(false);
 	}
+
+    public String getIPAddress() {
+        return ipaddr;
+    }
 
 	private boolean connect(boolean useHighRezVideoStreaming) {
 		if (inetaddr == null) {
@@ -116,8 +114,6 @@ public class ARDrone implements ARDroneInterface {
 		if (ardroneVersion == null)
 			ardroneVersion = new ARDroneInfo().getDroneVersion();			
 		
-		//System.out.println("(connect) AR.Drone version:" + ardroneVersion);
-
 		if (ardroneVersion == ARDroneVersion.ARDRONE1)
 			manager = new CommandManager1(inetaddr, useHighRezVideoStreaming);
 		else if (ardroneVersion == ARDroneVersion.ARDRONE2)
@@ -131,14 +127,11 @@ public class ARDrone implements ARDroneInterface {
 		return manager.connect(ARDroneConstants.PORT);
 	}
 
-	/** connect video */
 	@Override
 	public boolean connectVideo() {
 		if (inetaddr == null) {
 			inetaddr = getInetAddress(ipaddr);
 		}
-		//System.out.println("(connect video) AR.Drone version:" + ardroneVersion);
-
 		if (ardroneVersion == ARDroneVersion.ARDRONE1) {
 			videoManager = new VideoManager1(inetaddr, manager);
 		} else if (ardroneVersion == ARDroneVersion.ARDRONE2) {
@@ -160,16 +153,12 @@ public class ARDrone implements ARDroneInterface {
 		return videoManager.connect(ARDroneConstants.VIDEO_PORT);
 	}
 
-	/** connect navdata */
 	@Override
 	public boolean connectNav() {
 		if (inetaddr == null) {
 			inetaddr = getInetAddress(ipaddr);
 		}
 		
-		
-		//System.out.println("(connect nav) AR.Drone version:" + ardroneVersion);
-
 		if (ardroneVersion == ARDroneVersion.ARDRONE1) {
 			navdataManager = new NavDataManager1(inetaddr, manager);
 		} else if (ardroneVersion == ARDroneVersion.ARDRONE2) {
@@ -225,7 +214,6 @@ public class ARDrone implements ARDroneInterface {
 		
 		manager.enableNavData();
 		manager.enableGPS();
-		
 		
 		return navdataManager.connect(ARDroneConstants.NAV_PORT);
 	}
